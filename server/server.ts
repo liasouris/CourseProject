@@ -13,7 +13,7 @@ const app: Express = express()
 const PORT = 3000;
 
 //Setting up MongoDB connection using mongoose
-const mongoDB: string = "mongodb://127.0.0.1:27017"
+const mongoDB: string = "mongodb://127.0.0.1:27017/"
 mongoose.connect(mongoDB)
 mongoose.Promise = Promise
 const db: Connection = mongoose.connection

@@ -6,9 +6,10 @@ import IconButton from '@mui/material/IconButton';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
+  // State to track JWT (user authentication token)
 const Navigation = () => {
   const [jwt, setJwt] = useState<string | null>(null);
-
+  //loads JWT from localstorage
   useEffect(() => {
     setJwt(localStorage.getItem("token"));
   }, []);

@@ -1,42 +1,64 @@
 import React, { useState } from "react";
-import { Card } from "./Card";
-import {AddCard} from "./AddCard"
+import { useDroppable } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { Paper, Typography, IconButton, Box, Button } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { AddCard } from "./AddCard";
+import { CardType, ColumnType } from "./Board";
+import { SortableCard } from "./SortableCard";
 
-export const Column = ({
-  column,
-  cards,
-  setCards,
-  removeColumn,
-}: {
-  column: { id: string; title: string };
-  cards: { id: string; title: string; column: string; color?: string }[];
-  setCards: React.Dispatch<React.SetStateAction<{ id: string; title: string; column: string; color?: string }[]>>;
+interface ColumnProps {
+  column: ColumnType;
+  cards: CardType[];
+  setCards: React.Dispatch<React.SetStateAction<CardType[]>>;
   removeColumn: (id: string) => void;
-}) => {
-  const [showOptions, setShowOptions] = useState(false);
+}
 
-  const addCard = (title: string) => {
-    const newCard = { id: Math.random().toString(), title, column: column.id };
-    setCards(prevCards => [...prevCards, newCard]);
+export const Column: React.FC<ColumnProps> = ({ column, cards, setCards, removeColumn }) => {
+  const [showOptions, setShowOptions] = useState<boolean>(false);
+
+  // Registers column as a droppable area.
+  const { setNodeRef } = useDroppable({ id: column.id });
+
+  // Function to add a new card to this column
+  const addCard = (title: string): void => {
+    const newCard: CardType = { id: Math.random().toString(), title, column: column.id };
+    setCards((prevCards) => [...prevCards, newCard]);
   };
 
-  const removeCard = (id: string) => {
-    setCards(prevCards => prevCards.filter(card => card.id !== id));
+  // Function to remove a card from this column
+  const removeCard = (id: string): void => {
+    setCards((prevCards) => prevCards.filter((card) => card.id !== id));
   };
 
   return (
-    <div className="w-56 shrink-0">
-      <div className="mb-3 flex items-center justify-between">
-        <h3>{column.title}</h3>
-        <button onClick={() => setShowOptions(!showOptions)}>...</button>
-        {showOptions && (
-          <button onClick={() => removeColumn(column.id)}>Remove Column</button>
-        )}
-      </div>
-      {cards.map(card => (
-        <Card key={card.id} card={card} removeCard={removeCard} />
-      ))}
+    <Paper ref={setNodeRef} elevation={3} sx={{ width: 250, p: 2, borderRadius: 2 }}>
+      {/* Column title and menu button */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h6">{column.title}</Typography>
+        <IconButton size="small" onClick={() => setShowOptions(!showOptions)}>
+          <MoreVertIcon />
+        </IconButton>
+      </Box>
+
+      {/*  (delete column) */}
+      {showOptions && (
+        <Box mb={2}>
+          <Button variant="contained" color="error" onClick={() => removeColumn(column.id)}>
+            Remove Column
+          </Button>
+        </Box>
+      )}
+
+      {/* Wrap cards in a SortableContext so that can be reordering */}
+      <SortableContext items={cards.map((card) => card.id)} strategy={verticalListSortingStrategy}>
+        {cards.map((card) => (
+          <SortableCard key={card.id} card={card} removeCard={removeCard} />
+        ))}
+      </SortableContext>
+
+      {/* Add new card form */}
       <AddCard addCard={addCard} />
-    </div>
+    </Paper>
   );
 };

@@ -15,7 +15,7 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = 3000;
 //Setting up MongoDB connection using mongoose
-const mongoDB = "mongodb://127.0.0.1:27017";
+const mongoDB = "mongodb://127.0.0.1:27017/";
 mongoose_1.default.connect(mongoDB);
 mongoose_1.default.Promise = Promise;
 const db = mongoose_1.default.connection;

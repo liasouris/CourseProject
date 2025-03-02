@@ -1,29 +1,29 @@
-import { useState } from "react";
-import { ChromePicker } from "react-color";
+import React from "react";
+import { Paper, Typography, Button, Box } from "@mui/material";
 
-export const Card = ({
-  card,
-  removeCard,
-}: {
-  card: { id: string; title: string; column: string; color?: string };
+interface CardProps {
+  card: { id: string; title: string; color?: string };
   removeCard: (id: string) => void;
-}) => {
-  const [color, setColor] = useState(card.color || "#ffffff");
-  const [showColorPicker, setShowColorPicker] = useState(false);
+}
 
+export const Card: React.FC<CardProps> = ({ card, removeCard }) => {
   return (
-    <div className="rounded border border-neutral-700 bg-neutral-800 p-3" style={{ backgroundColor: color }}>
-      <p>{card.title}</p>
-      <button onClick={() => removeCard(card.id)}>Remove</button>
-      <button onClick={() => setShowColorPicker(!showColorPicker)}>
-        Change Color
-      </button>
-      {showColorPicker && (
-        <ChromePicker
-          color={color}
-          onChangeComplete={(color) => setColor(color.hex)}
-        />
-      )}
-    </div>
+    // Paper component acts as the card container 
+    <Paper
+      style={{ backgroundColor: card.color || "#ffffff" }}
+      elevation={3}
+      sx={{ padding: 2, borderRadius: 2 }}
+    >
+      <Typography variant="body1">{card.title}</Typography>
+      <Box mt={2} display="flex" gap={1}>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => removeCard(card.id)}
+        >
+          Remove
+        </Button>
+      </Box>
+    </Paper>
   );
 };
